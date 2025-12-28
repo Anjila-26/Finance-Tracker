@@ -17,7 +17,7 @@ const logo = `
  |_|    |_|_| |_|\__,_|_| |_|\___|\_____|\___/
 
          • GO • FINANCE • AUTOMATION
-
+		 
 `
 
 func main() {
@@ -29,8 +29,16 @@ func main() {
 	var money float64
 	var err error
 	if scanner.Scan() {
-		input := scanner.Text()
-		money, err = strconv.ParseFloat(strings.TrimSpace(input), 64)
+		input := strings.TrimSpace(scanner.Text())
+		if strings.EqualFold(input, "tui") {
+			// launch Bubble Tea TUI
+			if err := runTUI(0); err != nil {
+				fmt.Println("TUI error:", err)
+			}
+			return
+		}
+
+		money, err = strconv.ParseFloat(input, 64)
 
 		if err != nil {
 			fmt.Println("Invalid input. Please enter a number.")
@@ -43,6 +51,7 @@ func main() {
 	fmt.Print("What you wanna do next? : \n")
 	fmt.Print("1. Adding.\n")
 	fmt.Print("2. Dedecuting.\n")
+	fmt.Print("3. Open TUI.\n")
 
 	options := bufio.NewScanner(os.Stdin)
 
@@ -79,6 +88,13 @@ func main() {
 
 		result := deduct_money(money, subtract)
 		fmt.Printf("Deducting money... $%.2f - $%.2f = $%.2f\n", money, subtract, result)
+
+	case 3:
+		// launch Bubble Tea TUI with current money
+		if err := runTUI(money); err != nil {
+			fmt.Println("TUI error:", err)
+		}
+		return
 	default:
 		fmt.Println("Invalid option.")
 	}
